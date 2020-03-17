@@ -1,12 +1,11 @@
 #include <iostream>
 #include <vector>
-#include "TurringMachine.h"
+#include "TuringMachine.h"
 
 using namespace std;
 
 // creat new machine with empty squares, current = 0
 TuringMachine() {
-	onSquares;
 	current = 0;
 }
 
@@ -33,16 +32,43 @@ void makeMark(bool mark) {
 		}
 	}
 
-	if (!doNothing && mark) // add current to the list if it's not there
-		onSquares.push_back(current);
+	if (!doNothing && mark) { // add current to the list if it's not there
+		if (onSquares.size() == 0) {
+			onSquares.push_back(current);
+		}
+		else {
+			int i = 0;
+
+			while (i < onSquares.size()) {
+				if (onSquares.at(i) < current)
+					i++;
+				else {
+					onSquares.insert(onSquares.begin() + i, current);
+					i = onSquares.size();
+				}
+			}
+		}
+	}
 }
 
 // returns state of current square 0 = f, 1 = t
 bool readSquare() {
+	for (int i = 0; i < onSquares.size(); i++) {
+		if (onSquares.at(i) == current)
+			return true;
+	}
 
+	return false;
 }
 
 // Tape: [-2, -1, 0, 1, 2] Current square: -1
 void printMachineInfo() {
-
+	cout << "Tape: [ ";
+	for (int i = 0; i < onSquares.size(); i++) {
+		cout << onSquares.at(i);
+		if (i < onSquares.size() - 1) {
+			cout << ", ";
+		}
+	}
+	cout << "] Current square: " << current << endl;
 }
