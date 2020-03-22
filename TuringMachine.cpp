@@ -19,43 +19,58 @@ void moveRight() {
 	current += 1;
 }
 
-// change current to 0 or 1 based on input
-void makeMark(bool mark) {
-	bool doNothing = false;
+// search a vector and return the index if found, -1 if not
+int tapeSearch() {
+	int head = 0, mid = 0;
+	int tail = tape.size();
 
-	for (int i = 0; i < onSquares.size(); i++) {
-		if (onSquares.at(i) == current) {
-			if (!mark)
-				onSquares.erase(current);
-			doNothing = true;	// either remove current from the list,
-								// or confirm it's there and do nothing
+	while (head < tail) {
+		mid = head + (tail - head) / 2;
+		if (current < tape[mid]) {
+			tail = mid;
+		}
+		else if (current > tape[mid]) {
+			head = mid + 1;
+		}
+		else {
+			return mid;
 		}
 	}
 
-	if (!doNothing && mark) { // add current to the list if it's not there
-		if (onSquares.size() == 0) {
-			onSquares.push_back(current);
+	return -1;
+}
+
+// change current to 0 or 1 based on input
+void makeMark(bool mark) {
+	int index = tapeSearch();
+
+	if (index == -1 && mark) {
+		if (tape.size() == 0) {
+			tape.push_back(current);
 		}
 		else {
 			int i = 0;
 
-			while (i < onSquares.size()) {
-				if (onSquares.at(i) < current)
+			while (i < tape.size()) {
+				if (tape.at(i) < current)
 					i++;
 				else {
-					onSquares.insert(onSquares.begin() + i, current);
-					i = onSquares.size();
+					tape.insert(tape.begin() + i, current);
+					i = tape.size();
 				}
 			}
 		}
+	}
+
+	else if (tape.at(index) == current && !mark) {
+		tape.erase(current);
 	}
 }
 
 // returns state of current square 0 = f, 1 = t
 bool readSquare() {
-	for (int i = 0; i < onSquares.size(); i++) {
-		if (onSquares.at(i) == current)
-			return true;
+	if (tapeSearch() > -1) {
+		return true;
 	}
 
 	return false;
@@ -64,9 +79,9 @@ bool readSquare() {
 // Tape: [-2, -1, 0, 1, 2] Current square: -1
 void printMachineInfo() {
 	cout << "Tape: [ ";
-	for (int i = 0; i < onSquares.size(); i++) {
-		cout << onSquares.at(i);
-		if (i < onSquares.size() - 1) {
+	for (int i = 0; i < tape.size(); i++) {
+		cout << tape.at(i);
+		if (i < tape.size() - 1) {
 			cout << ", ";
 		}
 	}
