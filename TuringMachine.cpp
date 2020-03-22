@@ -5,22 +5,22 @@
 using namespace std;
 
 // creat new machine with empty squares, current = 0
-TuringMachine() {
+TuringMachine::TuringMachine() {
 	current = 0;
 }
 
 // select the square to the left
-void moveLeft() {
+void TuringMachine::moveLeft() {
 	current -= 1;
 }
 
 // select the square to the right
-void moveRight() {
+void TuringMachine::moveRight() {
 	current += 1;
 }
 
 // search a vector and return the index if found, -1 if not
-int tapeSearch() {
+int TuringMachine::tapeSearch() {
 	int head = 0, mid = 0;
 	int tail = tape.size();
 
@@ -41,7 +41,7 @@ int tapeSearch() {
 }
 
 // change current to 0 or 1 based on input
-void makeMark(bool mark) {
+void TuringMachine::makeMark(bool mark) {
 	int index = tapeSearch();
 
 	if (index == -1 && mark) {
@@ -51,24 +51,20 @@ void makeMark(bool mark) {
 		else {
 			int i = 0;
 
-			while (i < tape.size()) {
-				if (tape.at(i) < current)
-					i++;
-				else {
-					tape.insert(tape.begin() + i, current);
-					i = tape.size();
-				}
+			while (i < tape.size() && tape.at(i) < current) {
+				i++;
 			}
+			tape.insert(tape.begin() + i, current);
 		}
 	}
 
-	else if (tape.at(index) == current && !mark) {
-		tape.erase(current);
+	else if (!mark && index > -1 && tape.at(index) == current) {
+		tape.erase(tape.begin() + index);
 	}
 }
 
 // returns state of current square 0 = f, 1 = t
-bool readSquare() {
+bool TuringMachine::readSquare() {
 	if (tapeSearch() > -1) {
 		return true;
 	}
@@ -77,8 +73,8 @@ bool readSquare() {
 }
 
 // Tape: [-2, -1, 0, 1, 2] Current square: -1
-void printMachineInfo() {
-	cout << "Tape: [ ";
+void TuringMachine::printMachineInfo() {
+	cout << "Tape: [";
 	for (int i = 0; i < tape.size(); i++) {
 		cout << tape.at(i);
 		if (i < tape.size() - 1) {
